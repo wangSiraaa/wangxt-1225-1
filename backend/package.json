@@ -1,0 +1,38 @@
+{
+  "name": "aquaculture-backend",
+  "version": "1.0.0",
+  "description": "水产养殖基地管理系统后端",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:prod": "node dist/main"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/typeorm": "^10.0.0",
+    "@nestjs/swagger": "^7.1.0",
+    "typeorm": "^0.3.17",
+    "pg": "^8.11.0",
+    "ioredis": "^5.3.2",
+    "@nestjs/cache-manager": "^2.1.0",
+    "cache-manager": "^5.2.3",
+    "cache-manager-redis-store": "^3.0.1",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "class-validator": "^0.14.0",
+    "class-transformer": "^0.5.1",
+    "dayjs": "^1.11.9",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.0.0",
+    "@nestjs/schematics": "^10.0.0",
+    "@types/node": "^20.4.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}

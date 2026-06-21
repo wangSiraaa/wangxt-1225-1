@@ -56,6 +56,8 @@ export const batchApi = {
   releaseSalesBatch: (id: string) => put<SalesBatch>(`/batch/sales/${id}/release`),
   rejectSalesBatch: (id: string, reason: string) =>
     put<SalesBatch>(`/batch/sales/${id}/reject`, { reason }),
+  inspectSalesBatch: (id: string, passed: boolean, inspector: string, report?: string) =>
+    put<SalesBatch>(`/batch/sales/${id}/inspect`, { passed, inspector, report }),
 
   preCheckWithdrawal: (pondId: string, harvestDate: string) =>
     get<any>(`/batch/pre-check/withdrawal?pondId=${pondId}&harvestDate=${harvestDate}`),

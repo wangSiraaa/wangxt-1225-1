@@ -105,9 +105,9 @@ export class BatchService {
       harvestDate: dayjs(dto.harvestDate).toDate(),
       inspectionDate: dayjs(dto.inspectionDate).toDate(),
       salesBatchCode: `SB${dayjs().format('YYYYMMDD')}${uuidv4().slice(0, 6).toUpperCase()}`,
-      withdrawalPeriodVerified: true,
+      withdrawalPeriodVerified: false,
       withdrawalEndDate: withdrawalCheck.latestWithdrawalEndDate,
-      status: 'qualified',
+      status: 'pending_inspection',
     });
 
     const saved = await this.salesBatchRepository.save(salesBatch);
@@ -118,6 +118,35 @@ export class BatchService {
     }
 
     return saved;
+  }
+
+  async inspectSalesBatch(id: string, passed: boolean, inspector: string, report?: string): Promise<SalesBatch> {
+    const salesBatch = await this.findOneSalesBatch(id);
+    if (salesBatch.status !== 'pending_inspection') {
+      throw new BadRequestException(`销售批次状态为「${salesBatch.status}」，不能进行质检`);
+    }
+
+    if (passed) {
+      const withdrawalCheck = await this.medicationService.checkWithdrawalPeriod(
+        salesBatch.pondId,
+        salesBatch.harvestDate,
+      );
+      if (!withdrawalCheck.canRelease) {
+        throw new BadRequestException('停药期未满，质检不能通过');
+      }
+      salesBatch.status = 'qualified';
+      salesBatch.withdrawalPeriodVerified = true;
+      salesBatch.qualityInspector = inspector;
+      if (report) {
+        salesBatch.inspectionReport = report;
+      }
+    } else {
+      salesBatch.status = 'rejected';
+      salesBatch.qualityRemarks = report || '质检不合格';
+      salesBatch.qualityInspector = inspector;
+    }
+
+    return this.salesBatchRepository.save(salesBatch);
   }
 
   async releaseSalesBatch(id: string): Promise<SalesBatch> {

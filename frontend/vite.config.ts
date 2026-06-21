@@ -12,10 +12,14 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/pond': 'http://localhost:3000',
-      '/medication': 'http://localhost:3000',
-      '/batch': 'http://localhost:3000',
-      '/workorder': 'http://localhost:3000',
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/api-docs': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
   },
 });

@@ -53,9 +53,20 @@ export class BatchController {
   }
 
   @Put('sales/:id/release')
-  @ApiOperation({ summary: '放行销售批次' })
+  @ApiOperation({ summary: '放行销售批次（出塘）' })
   releaseSalesBatch(@Param('id') id: string) {
     return this.batchService.releaseSalesBatch(id);
+  }
+
+  @Put('sales/:id/inspect')
+  @ApiOperation({ summary: '质检员确认（质检）' })
+  inspectSalesBatch(
+    @Param('id') id: string,
+    @Body('passed') passed: boolean,
+    @Body('inspector') inspector: string,
+    @Body('report') report?: string,
+  ) {
+    return this.batchService.inspectSalesBatch(id, passed, inspector, report);
   }
 
   @Put('sales/:id/reject')

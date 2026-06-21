@@ -78,4 +78,11 @@ export class WorkOrderController {
   getStatistics() {
     return this.workOrderService.getStatistics();
   }
+
+  @Get('aerator/latest/:pondId')
+  @ApiOperation({ summary: '获取池塘最近一次增氧工单处理记录' })
+  @ApiParam({ name: 'pondId', description: '池塘ID' })
+  getLatestAeratorOrder(@Param('pondId') pondId: string) {
+    return this.workOrderService.getLatestAeratorOrder(pondId);
+  }
 }

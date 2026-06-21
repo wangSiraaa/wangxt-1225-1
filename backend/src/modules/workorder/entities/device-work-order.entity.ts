@@ -54,6 +54,9 @@ export class DeviceWorkOrder {
   @Column({ type: 'varchar', length: 255, nullable: true })
   remark: string;
 
+  @Column({ type: 'text', nullable: true })
+  aeratorHandleRemark: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

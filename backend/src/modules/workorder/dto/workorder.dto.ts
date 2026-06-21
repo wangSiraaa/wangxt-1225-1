@@ -63,4 +63,9 @@ export class HandleWorkOrderDto {
   @IsString()
   @IsNotEmpty()
   operator: string;
+
+  @ApiProperty({ description: '增氧设备处理备注', required: false })
+  @IsString()
+  @IsOptional()
+  aeratorHandleRemark?: string;
 }

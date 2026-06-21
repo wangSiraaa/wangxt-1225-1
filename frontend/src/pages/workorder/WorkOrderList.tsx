@@ -329,6 +329,14 @@ export default function WorkOrderList() {
             rules={[{ required: true, message: '请填写处理结果' }]}>
             <Input.TextArea rows={4} placeholder="请详细描述处理过程和结果" />
           </Form.Item>
+          {currentOrder?.deviceType === 'aerator' && (
+            <Form.Item name="aeratorHandleRemark" label="增氧设备处理备注">
+              <Input.TextArea
+                rows={3}
+                placeholder="请记录增氧设备处理情况，如：开启1号增氧机2小时、清理曝气盘等"
+              />
+            </Form.Item>
+          )}
           <Form.Item name="operator" label="操作人"
             rules={[{ required: true, message: '请输入操作人姓名' }]}>
             <Input placeholder="请输入操作人姓名" />

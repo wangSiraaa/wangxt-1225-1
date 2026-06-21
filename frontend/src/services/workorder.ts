@@ -18,6 +18,7 @@ export interface DeviceWorkOrder {
   handleResult?: string;
   operator?: string;
   remark?: string;
+  aeratorHandleRemark?: string;
   createdAt: string;
   updatedAt: string;
   pond?: any;
@@ -39,4 +40,6 @@ export const workOrderApi = {
   checkAerator: (pondId: string, threshold?: number) =>
     post<DeviceWorkOrder>(`/workorder/aerator/check/${pondId}${threshold ? `?threshold=${threshold}` : ''}`),
   stats: () => get<any>('/workorder/stats/summary'),
+  getLatestAeratorOrder: (pondId: string) =>
+    get<DeviceWorkOrder | null>(`/workorder/aerator/latest/${pondId}`),
 };

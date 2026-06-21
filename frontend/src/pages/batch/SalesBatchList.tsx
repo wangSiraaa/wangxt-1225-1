@@ -28,6 +28,7 @@ export default function SalesBatchList() {
   const [ponds, setPonds] = useState<Pond[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [preCheckResult, setPreCheckResult] = useState<any>(null);
+  const [latestAeratorOrder, setLatestAeratorOrder] = useState<any>(null);
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [rejectBatchId, setRejectBatchId] = useState<string | null>(null);
   const [rejectForm] = Form.useForm();
@@ -48,11 +49,16 @@ export default function SalesBatchList() {
   const handlePreCheck = async (pondId: string, harvestDate: string) => {
     if (!pondId || !harvestDate) {
       setPreCheckResult(null);
+      setLatestAeratorOrder(null);
       return;
     }
     try {
-      const result = await batchApi.preCheckWithdrawal(pondId, dayjs(harvestDate).format('YYYY-MM-DD'));
+      const [result, aeratorOrder] = await Promise.all([
+        batchApi.preCheckWithdrawal(pondId, dayjs(harvestDate).format('YYYY-MM-DD')),
+        pondApi.getLatestAeratorOrder(pondId),
+      ]);
       setPreCheckResult(result);
+      setLatestAeratorOrder(aeratorOrder);
     } catch (e) {}
   };
 
@@ -249,6 +255,42 @@ export default function SalesBatchList() {
                 }
               />
             )}
+          </div>
+        )}
+
+        {latestAeratorOrder && (
+          <div style={{ marginBottom: 16 }}>
+            <Alert
+              type="info"
+              showIcon
+              message="最近增氧处理记录"
+              description={
+                <div>
+                  <p style={{ margin: '4px 0' }}>
+                    <strong>工单编号：</strong>{latestAeratorOrder.orderCode}
+                    <span style={{ marginLeft: 16 }}>
+                      <strong>处理时间：</strong>
+                      {dayjs(latestAeratorOrder.completedAt).format('YYYY-MM-DD HH:mm')}
+                    </span>
+                  </p>
+                  <p style={{ margin: '4px 0' }}>
+                    <strong>触发溶氧值：</strong>{latestAeratorOrder.triggerValue} mg/L
+                    <span style={{ marginLeft: 16 }}>
+                      <strong>处理人：</strong>{latestAeratorOrder.operator}
+                    </span>
+                  </p>
+                  <p style={{ margin: '4px 0' }}>
+                    <strong>处理结果：</strong>{latestAeratorOrder.handleResult}
+                  </p>
+                  {latestAeratorOrder.aeratorHandleRemark && (
+                    <p style={{ margin: '4px 0' }}>
+                      <strong>增氧设备处理备注：</strong>
+                      {latestAeratorOrder.aeratorHandleRemark}
+                    </p>
+                  )}
+                </div>
+              }
+            />
           </div>
         )}
 

@@ -42,6 +42,7 @@ export default function PondDetail() {
   const [mortalityRecords, setMortalityRecords] = useState<MortalityRecord[]>([]);
   const [activePlans, setActivePlans] = useState<any[]>([]);
   const [withdrawalCheck, setWithdrawalCheck] = useState<any>(null);
+  const [latestAeratorOrder, setLatestAeratorOrder] = useState<any>(null);
   const [waterModalVisible, setWaterModalVisible] = useState(false);
   const [mortalityModalVisible, setMortalityModalVisible] = useState(false);
   const [waterForm] = Form.useForm();
@@ -60,6 +61,7 @@ export default function PondDetail() {
       mortality,
       plans,
       withdrawal,
+      aeratorOrder,
     ] = await Promise.all([
       pondApi.detail(id),
       pondApi.getSensorLatest(id),
@@ -67,6 +69,7 @@ export default function PondDetail() {
       pondApi.listMortality(id),
       medicationApi.pondActivePlans(id),
       medicationApi.checkWithdrawal(id),
+      pondApi.getLatestAeratorOrder(id),
     ]);
     setPond(pondData);
     setSensorLatest(sensor);
@@ -74,6 +77,7 @@ export default function PondDetail() {
     setMortalityRecords(mortality);
     setActivePlans(plans);
     setWithdrawalCheck(withdrawal);
+    setLatestAeratorOrder(aeratorOrder);
   };
 
   const waterQualityColumns = [
@@ -221,6 +225,31 @@ export default function PondDetail() {
           />
         ) : (
           <span style={{ color: '#999' }}>暂无进行中的用药方案</span>
+        )}
+      </Card>
+
+      <Card size="small" title="最近增氧处理记录" style={{ marginBottom: 16 }}>
+        {latestAeratorOrder ? (
+          <Descriptions size="small" column={2}>
+            <Descriptions.Item label="工单编号">{latestAeratorOrder.orderCode}</Descriptions.Item>
+            <Descriptions.Item label="处理时间">
+              {dayjs(latestAeratorOrder.completedAt).format('YYYY-MM-DD HH:mm')}
+            </Descriptions.Item>
+            <Descriptions.Item label="触发溶氧值">
+              {latestAeratorOrder.triggerValue} mg/L
+            </Descriptions.Item>
+            <Descriptions.Item label="处理人">{latestAeratorOrder.operator}</Descriptions.Item>
+            <Descriptions.Item label="处理结果" span={2}>
+              {latestAeratorOrder.handleResult}
+            </Descriptions.Item>
+            {latestAeratorOrder.aeratorHandleRemark && (
+              <Descriptions.Item label="增氧设备处理备注" span={2}>
+                {latestAeratorOrder.aeratorHandleRemark}
+              </Descriptions.Item>
+            )}
+          </Descriptions>
+        ) : (
+          <span style={{ color: '#999' }}>暂无增氧处理记录</span>
         )}
       </Card>
 

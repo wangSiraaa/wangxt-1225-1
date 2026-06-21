@@ -92,4 +92,18 @@ export class PondController {
   ) {
     return this.pondService.checkLowDissolvedOxygen(pondId, threshold ? Number(threshold) : undefined);
   }
+
+  @Get(':pondId/status')
+  @ApiOperation({ summary: '获取池塘状态（含最近增氧处理记录）' })
+  @ApiParam({ name: 'pondId', description: '池塘ID' })
+  getPondStatus(@Param('pondId') pondId: string) {
+    return this.pondService.getPondStatus(pondId);
+  }
+
+  @Get(':pondId/aerator/latest')
+  @ApiOperation({ summary: '获取池塘最近一次增氧工单处理记录' })
+  @ApiParam({ name: 'pondId', description: '池塘ID' })
+  getLatestAeratorOrder(@Param('pondId') pondId: string) {
+    return this.pondService.getLatestAeratorOrder(pondId);
+  }
 }

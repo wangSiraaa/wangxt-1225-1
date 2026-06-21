@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Pond } from './entities/pond.entity';
 import { WaterQualityRecord } from './entities/water-quality-record.entity';
 import { MortalityRecord } from './entities/mortality-record.entity';
+import { DeviceWorkOrder } from '../workorder/entities/device-work-order.entity';
 import { CreatePondDto, UpdatePondDto } from './dto/pond.dto';
 import { CreateWaterQualityDto } from './dto/water-quality.dto';
 import { CreateMortalityDto } from './dto/mortality.dto';
@@ -18,6 +19,8 @@ export class PondService {
     private waterQualityRepository: Repository<WaterQualityRecord>,
     @InjectRepository(MortalityRecord)
     private mortalityRepository: Repository<MortalityRecord>,
+    @InjectRepository(DeviceWorkOrder)
+    private workOrderRepository: Repository<DeviceWorkOrder>,
     private redisService: RedisService,
   ) {}
 
@@ -151,6 +154,35 @@ export class PondService {
     return {
       isLow: consecutiveLow,
       consecutiveCount: history.filter(h => h.dissolvedOxygen < threshold).length,
+    };
+  }
+
+  async getLatestAeratorOrder(pondId: string): Promise<DeviceWorkOrder | null> {
+    const orders = await this.workOrderRepository.find({
+      where: {
+        pondId,
+        deviceType: 'aerator',
+        status: 'completed',
+      },
+      order: { completedAt: 'DESC' },
+      take: 1,
+    });
+    return orders.length > 0 ? orders[0] : null;
+  }
+
+  async getPondStatus(pondId: string): Promise<{
+    pond: Pond;
+    sensorData: any;
+    latestAeratorOrder: DeviceWorkOrder | null;
+  }> {
+    const pond = await this.findOne(pondId);
+    const sensorData = await this.getSensorLatest(pondId);
+    const latestAeratorOrder = await this.getLatestAeratorOrder(pondId);
+
+    return {
+      pond,
+      sensorData,
+      latestAeratorOrder,
     };
   }
 }

@@ -69,6 +69,9 @@ export class WorkOrderService {
     order.handleResult = dto.handleResult;
     order.operator = dto.operator;
     order.completedAt = new Date();
+    if (dto.aeratorHandleRemark) {
+      order.aeratorHandleRemark = dto.aeratorHandleRemark;
+    }
     return this.workOrderRepository.save(order);
   }
 
@@ -150,5 +153,18 @@ export class WorkOrderService {
       .getCount();
 
     return { total, pending, processing, completed, cancelled, todayCount };
+  }
+
+  async getLatestAeratorOrder(pondId: string): Promise<DeviceWorkOrder | null> {
+    const orders = await this.workOrderRepository.find({
+      where: {
+        pondId,
+        deviceType: 'aerator',
+        status: 'completed',
+      },
+      order: { completedAt: 'DESC' },
+      take: 1,
+    });
+    return orders.length > 0 ? orders[0] : null;
   }
 }

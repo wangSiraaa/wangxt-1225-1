@@ -39,6 +39,12 @@ export interface MortalityRecord {
   recordedAt: string;
 }
 
+export interface PondStatus {
+  pond: Pond;
+  sensorData: any;
+  latestAeratorOrder: any | null;
+}
+
 export const pondApi = {
   list: () => get<Pond[]>('/pond'),
   detail: (id: string) => get<Pond>(`/pond/${id}`),
@@ -56,4 +62,7 @@ export const pondApi = {
   getSensorHistory: (pondId: string) => get<any[]>(`/pond/${pondId}/sensor/history`),
   checkDO: (pondId: string, threshold?: number) =>
     get<any>(`/pond/${pondId}/sensor/check-do${threshold ? `?threshold=${threshold}` : ''}`),
+
+  getPondStatus: (pondId: string) => get<PondStatus>(`/pond/${pondId}/status`),
+  getLatestAeratorOrder: (pondId: string) => get<any | null>(`/pond/${pondId}/aerator/latest`),
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   ProTable,
   ActionType,
@@ -16,7 +16,7 @@ export default function MedicineList() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editRecord, setEditRecord] = useState<Medicine | null>(null);
   const [includeBanned, setIncludeBanned] = useState(false);
-  const [actionRef, setActionRef] = useState<ActionType | undefined>();
+  const actionRef = useRef<ActionType>();
 
   const columns = [
     { title: '药品编码', dataIndex: 'medicineCode', width: 120 },
@@ -59,7 +59,7 @@ export default function MedicineList() {
             onConfirm={async () => {
               await medicationApi.removeMedicine(record.id);
               message.success('删除成功');
-              actionRef?.reload();
+              actionRef.current?.reload();
             }}
           >
             <Button type="link" danger icon={<DeleteOutlined />}>
@@ -75,7 +75,7 @@ export default function MedicineList() {
     <div>
       <ProTable<Medicine>
         headerTitle="药品档案"
-        actionRef={setActionRef}
+        actionRef={actionRef}
         rowKey="id"
         search={false}
         toolBarRender={() => [
@@ -113,7 +113,7 @@ export default function MedicineList() {
             await medicationApi.createMedicine(values);
           }
           message.success(editRecord ? '更新成功' : '创建成功');
-          actionRef?.reload();
+          actionRef.current?.reload();
           return true;
         }}
         layout="horizontal"

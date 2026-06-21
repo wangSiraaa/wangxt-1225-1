@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   ProTable,
   ActionType,
@@ -22,7 +22,7 @@ const statusMap: Record<string, { color: string; text: string }> = {
 export default function PondList() {
   const navigate = useNavigate();
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [actionRef, setActionRef] = useState<ActionType | undefined>();
+  const actionRef = useRef<ActionType>();
 
   const columns = [
     {
@@ -89,7 +89,7 @@ export default function PondList() {
             onConfirm={async () => {
               await pondApi.remove(record.id);
               message.success('删除成功');
-              actionRef?.reload();
+              actionRef.current?.reload();
             }}
           >
             <Button type="link" danger icon={<DeleteOutlined />}>
@@ -105,7 +105,7 @@ export default function PondList() {
     <div>
       <ProTable<Pond>
         headerTitle="池塘列表"
-        actionRef={setActionRef}
+        actionRef={actionRef}
         rowKey="id"
         search={false}
         toolBarRender={() => [
@@ -132,7 +132,7 @@ export default function PondList() {
         onFinish={async (values: any) => {
           await pondApi.create(values);
           message.success('创建成功');
-          actionRef?.reload();
+          actionRef.current?.reload();
           return true;
         }}
         layout="horizontal"

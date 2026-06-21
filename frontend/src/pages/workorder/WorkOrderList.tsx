@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   ProTable,
   ActionType,
@@ -37,7 +37,7 @@ const deviceTypeMap: Record<string, { color: string; text: string }> = {
 
 export default function WorkOrderList() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [actionRef, setActionRef] = useState<ActionType | undefined>();
+  const actionRef = useRef<ActionType>();
   const [ponds, setPonds] = useState<Pond[]>([]);
   const [stats, setStats] = useState<any>({});
   const [startModalVisible, setStartModalVisible] = useState(false);
@@ -206,7 +206,7 @@ export default function WorkOrderList() {
 
       <ProTable<DeviceWorkOrder>
         headerTitle="设备工单"
-        actionRef={setActionRef}
+        actionRef={actionRef}
         rowKey="id"
         search={false}
         toolBarRender={() => [
@@ -233,7 +233,7 @@ export default function WorkOrderList() {
         onFinish={async (values: any) => {
           await workOrderApi.create(values);
           message.success('工单创建成功');
-          actionRef?.reload();
+          actionRef.current?.reload();
           loadData();
           return true;
         }}
@@ -291,7 +291,7 @@ export default function WorkOrderList() {
             await workOrderApi.start(currentOrder.id, values.assignee);
             message.success('已开始处理');
             setStartModalVisible(false);
-            actionRef?.reload();
+            actionRef.current?.reload();
             loadData();
           }
         }}>
@@ -321,7 +321,7 @@ export default function WorkOrderList() {
             await workOrderApi.complete(currentOrder.id, values);
             message.success('工单已完成');
             setCompleteModalVisible(false);
-            actionRef?.reload();
+            actionRef.current?.reload();
             loadData();
           }
         }}>
@@ -355,7 +355,7 @@ export default function WorkOrderList() {
             await workOrderApi.cancel(currentOrder.id, values.reason, values.operator);
             message.success('工单已取消');
             setCancelModalVisible(false);
-            actionRef?.reload();
+            actionRef.current?.reload();
             loadData();
           }
         }}>

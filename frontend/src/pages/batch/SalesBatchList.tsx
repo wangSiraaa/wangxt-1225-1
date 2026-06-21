@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   ProTable,
   ActionType,
@@ -24,7 +24,7 @@ const statusMap: Record<string, { color: string; text: string }> = {
 
 export default function SalesBatchList() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [actionRef, setActionRef] = useState<ActionType | undefined>();
+  const actionRef = useRef<ActionType>();
   const [ponds, setPonds] = useState<Pond[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [preCheckResult, setPreCheckResult] = useState<any>(null);
@@ -112,7 +112,7 @@ export default function SalesBatchList() {
               onConfirm={async () => {
                 await batchApi.releaseSalesBatch(record.id);
                 message.success('已放行');
-                actionRef?.reload();
+                actionRef.current?.reload();
               }}
             >
               <Button type="link" icon={<CheckOutlined />}>
@@ -142,7 +142,7 @@ export default function SalesBatchList() {
     <div>
       <ProTable<SalesBatch>
         headerTitle="销售批次"
-        actionRef={setActionRef}
+        actionRef={actionRef}
         rowKey="id"
         search={false}
         toolBarRender={() => [
@@ -181,7 +181,7 @@ export default function SalesBatchList() {
           };
           await batchApi.createSalesBatch(payload);
           message.success('销售批次创建成功，已通过停药期校验');
-          actionRef?.reload();
+          actionRef.current?.reload();
           loadOptions();
           return true;
         }}
@@ -303,7 +303,7 @@ export default function SalesBatchList() {
             await batchApi.rejectSalesBatch(rejectBatchId, values.reason);
             message.success('已驳回');
             setRejectModalVisible(false);
-            actionRef?.reload();
+            actionRef.current?.reload();
           }
         }}>
           <Form.Item

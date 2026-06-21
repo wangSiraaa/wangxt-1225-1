@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   ProTable,
   ActionType,
@@ -24,7 +24,7 @@ const statusMap: Record<string, { color: string; text: string }> = {
 
 export default function MedicationPlanList() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [actionRef, setActionRef] = useState<ActionType | undefined>();
+  const actionRef = useRef<ActionType>();
   const [ponds, setPonds] = useState<Pond[]>([]);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
 
@@ -97,7 +97,7 @@ export default function MedicationPlanList() {
                 onConfirm={async () => {
                   await medicationApi.completePlan(record.id);
                   message.success('已标记完成');
-                  actionRef?.reload();
+                  actionRef.current?.reload();
                 }}
               >
                 <Button type="link" icon={<CheckOutlined />}>
@@ -109,7 +109,7 @@ export default function MedicationPlanList() {
                 onConfirm={async () => {
                   await medicationApi.cancelPlan(record.id);
                   message.success('已取消');
-                  actionRef?.reload();
+                  actionRef.current?.reload();
                 }}
               >
                 <Button type="link" danger icon={<CloseOutlined />}>
@@ -127,7 +127,7 @@ export default function MedicationPlanList() {
     <div>
       <ProTable<MedicationPlan>
         headerTitle="用药方案"
-        actionRef={setActionRef}
+        actionRef={actionRef}
         rowKey="id"
         search={false}
         toolBarRender={() => [
@@ -166,7 +166,7 @@ export default function MedicationPlanList() {
           };
           await medicationApi.createPlan(payload);
           message.success('用药方案开具成功');
-          actionRef?.reload();
+          actionRef.current?.reload();
           return true;
         }}
         layout="horizontal"

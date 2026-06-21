@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   ProTable,
   ActionType,
@@ -23,7 +23,7 @@ const statusMap: Record<string, { color: string; text: string }> = {
 
 export default function BatchList() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [actionRef, setActionRef] = useState<ActionType | undefined>();
+  const actionRef = useRef<ActionType>();
   const [ponds, setPonds] = useState<Pond[]>([]);
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function BatchList() {
               onClick={async () => {
                 await batchApi.completeBatch(record.id);
                 message.success('批次已标记完成');
-                actionRef?.reload();
+                actionRef.current?.reload();
               }}
             >
               完成
@@ -86,7 +86,7 @@ export default function BatchList() {
     <div>
       <ProTable<Batch>
         headerTitle="养殖批次"
-        actionRef={setActionRef}
+        actionRef={actionRef}
         rowKey="id"
         search={false}
         toolBarRender={() => [
@@ -117,7 +117,7 @@ export default function BatchList() {
           };
           await batchApi.createBatch(payload);
           message.success('养殖批次创建成功');
-          actionRef?.reload();
+          actionRef.current?.reload();
           return true;
         }}
         layout="horizontal"
